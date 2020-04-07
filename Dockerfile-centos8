@@ -1,0 +1,37 @@
+FROM centos:8
+
+RUN set -ex; \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm; \
+    yum install -y http://www.usablesecurity.net/OSCAR/repos/unstable/rhel-8-x86_64/oscar-release-6.1.3-0.20191216.el8.noarch.rpm; \
+    yum install -y dnf-plugins-core; \
+    yum config-manager --set-enabled PowerTools; \
+    yum update -y
+
+RUN set -ex; \
+    yum install -y bc binutils-devel dhcp-server docbook-utils dos2unix dosfstools flex gcc gcc-c++ git glib2-devel gperftools-devel less perl-AppConfig perl-JSON libtool libuuid-devel lzop ncurses-devel openssl-devel pam-devel php-json quilt readline-devel rsync supervisor syslinux syslinux-tftpboot tftp tftp-server make systemconfigurator kernel kernel-devel kernel-modules kernel-modules-extra lvm2 rtorrent jq xmlstarlet parted gdisk nmap-ncat net-tools bind-utils httpd php-fpm socat psmisc perl-XML-Simple plymouth plymouth-plugin-script plymouth-plugin-label dhcp-server openssh-server openssh-clients gettext util-linux
+
+RUN set -ex; \
+    mkdir -p /app/build; \
+    git clone --branch SystemImager-NG https://github.com/theasp/SystemImager /app/build; \
+    cd /app/build; \
+    ./configure; \
+    make install_server_all; \
+    rm -rf /app/build
+
+COPY app /app
+
+RUN set -ex; \
+    ln -sf /app/supervisord.conf /etc/supervisord.conf; \
+    sed -i -re 's!^(Alias) (/systemimager) (/usr/share/systemimager/webgui)$!\1 \2 \3\n\1 / \3!' /etc/httpd/conf.d/systemimager.conf; \
+    sed -i -re 's!^([[:space:]]+)Require local$!\1Require all granted!' /etc/httpd/conf.d/systemimager.conf; \
+    sed -i -re 's!^(listen.acl_users = .*)!;\1!' /etc/php-fpm.d/www.conf; \
+    sed -i -re 's!^;(listen.(owner|group)) = nobody$!\1 = apache!' /etc/php-fpm.d/www.conf; \
+    sed -i -re 's!^(setup_tftpd|test_tftpd)$!# \1 # Disabled in Docker!' /usr/sbin/si_mkbootserver; \
+    rm /etc/httpd/conf.d/welcome.conf; \
+    mv /app/files/systemimager.json /etc/systemimager/systemimager.json; \
+    mv /etc/systemimager /app/files/etc_systemimager; \
+    mv /var/lib/systemimager /app/files/var_lib_systemimager; \
+    rm -r /etc/dhcp; \
+    mkdir /etc/dhcp
+
+CMD /app/start.bash

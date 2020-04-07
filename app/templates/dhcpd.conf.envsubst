@@ -1,0 +1,73 @@
+#
+# "SystemImager"
+#
+#  Copyright (C) 1999-2019 Brian Elliott Finley <brian@thefinleys.com>
+#  Copyright (C) 2002 Bald Guy Software
+#
+#  This file was created with "si_mkdhcpserver", which is part of SystemImager.
+#  See http://systemimager.org/ for more information.
+#
+# This is an ISC DHCP v3 configuration file.
+
+# general options
+authoritative;
+ddns-update-style none;
+
+# Imageserver
+option option-140 code 140 = ip-address;
+
+# log_server_port
+option option-141 code 141 = unsigned integer 16;
+
+# ssh_download_url
+option option-142 code 142 = string;
+
+# flamethrower_directory_portbase
+option option-143 code 143 = unsigned integer 16;
+
+# tmpfs_staging
+option option-144 code 144 = string;
+
+# option-140 is the IP address of your SystemImager image server
+option option-140 ${SI_ADDRESS};
+
+# option-142 specifies the URL address of your ssh download
+# This should be in the format of "http://192.168.1.254/systemimager/boot/".
+#option option-142 "http://192.168.1.254/systemimager/boot/";
+
+# option-143 specifies the Flamethrower directory port.
+# The default is "9000".
+#option option-143 "9000";
+
+#
+# option-144 tells your auto-install client to spool the image into a tmpfs
+# prior to laying it down on disk.  It is not certain that this is always
+# a good thing to do.  And if you're feeling gutsy and want to try it, be
+# sure that your (memory + swap) is at least twice the size of your image
+# or your image transfer will fail when the tmpfs filesystem gets full!!!
+# If unsure, say "no".
+#
+option option-144 "n";
+
+# next-server is your network boot server
+next-server ${DHCP_NEXT_SERVER};
+
+# log-servers
+#option log-servers 1.2.3.4;
+
+# option-141 is the port number your log server uses
+#option option-141 514;
+
+
+# set lease time to infinite (-1)
+default-lease-time -1;
+
+# Uncomment one of the two following lines.  The first, if you need to
+# boot i386 clients, or the second for booting ia64 clients.
+filename "${DHCP_BOOT_FILE}";
+
+subnet ${DHCP_SUBNET_ADDRESS} netmask ${DHCP_SUBNET_NETMASK} {
+  range  ${DHCP_SUBNET_RANGE_START} ${DHCP_SUBNET_RANGE_END};
+  option domain-name "";
+  option routers ${DHCP_SUBNET_GATEWAY};
+}

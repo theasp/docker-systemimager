@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source /app/lib.bash
+set -e
+
+PIDFILE=/var/run/si_monitord.pid
+
+function stop {
+  kill_pidfile "${PIDFILE}"
+}
+
+function start {
+  trap stop INT TERM
+  /usr/sbin/si_monitord
+  sleep infinity
+}
+
+function main {
+  read_config_env
+  start
+}
+
+main "$@"

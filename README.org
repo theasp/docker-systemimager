@@ -1,0 +1,58 @@
+#+OPTIONS: ^:nil
+
+WORK IN PROGRESS
+
+* Images
+- ~theasp/systemimager:centos-8~
+
+* Quick Start
+
+** Environment Variables
+
+You can configure the generated configuration files by passing the following environment variables:
+
+| Name                      | Default         | Purpose                       |
+|---------------------------+-----------------+-------------------------------|
+| ~SI_ADDRESS~              | ~192.168.1.2~   | Address of this server        |
+| ~SI_TMPFS_STAGING~        | ~n~             | Use tmpfs staging: ~y~ or ~n~ |
+| ~DHCP_SUBNET_ADDRESS~     | ~192.168.1.0~   | Subnet address                |
+| ~DHCP_SUBNET_NETMASK~     | ~255.255.255.0~ | Subnet netmask                |
+| ~DHCP_SUBNET_RANGE_START~ | ~192.168.1.10~  | Dynamic address start         |
+| ~DHCP_SUBNET_RANGE_END~   | ~192.168.1.250~ | Dynamic address end           |
+| ~DHCP_SUBNET_DOMAIN~      |                 | Domain name                   |
+| ~DHCP_SUBNET_GATEWAY~     | ~192.168.1.1~   | Gateway address               |
+| ~DHCP_BOOT_FILE~          | ~pxelinux.0~    | Filename to boot for PXE      |
+| ~HTTP_PORT~               | 8989            | Web server port               |
+
+The only variable that will affect anything after the configuration files are generated is ~HTTP_PORT~, you will need to edit the files manually to change any of them.
+
+** Docker Compose
+
+Make a directory somewhere, and put this in ~docker-compose.yml~, adjusting the values to match your network.
+
+#+begin_src yaml :tangle docker-compose.yml
+---
+version: '3.7'
+
+services:
+   systemimager:
+     image: theasp/systemimager:centos-8
+     volumes:
+       - data/etc_systemimager:/etc/systemimager
+       - data/etc_dhcp:/etc/dhcp
+       - data/var_lib_systemimager:/var/lib/systemimager
+       - data/var_log:/var/log
+     restart: always
+     network_mode: host
+     environment:
+       SI_ADDRESS: 192.168.124.1
+       SI_TMPFS_STAGING: "n"
+       DHCP_SUBNET_ADDRESS: 192.168.124.0
+       DHCP_SUBNET_NETMASK: 255.255.255.0
+       DHCP_SUBNET_RANGE_START: 192.168.124.10
+       DHCP_SUBNET_RANGE_END: 192.168.124.250
+       DHCP_SUBNET_DOMAIN: systemimager.example.com
+       DHCP_SUBNET_GATEWAY: 192.168.124.1
+       DHCP_BOOT_FILE: pxelinux.0
+       HTTP_PORT: 8989
+#+end_src

@@ -1,0 +1,44 @@
+{
+  "pxe": {
+    "tftp_dir": "/var/lib/tftpboot",
+    "boot_files": "/usr/share/systemimager/boot",
+    "boot_mode": "net"
+  },
+  "monitor": {
+    "clients_db_dir": "/var/lib/systemimager/clients",
+    "log_file": "/var/log/systemimager/si_monitord.log",
+    "port": "8181",
+    "log_level": "1"
+  },
+  "imager": {
+    "images_dir": "/var/lib/systemimager/images",
+    "overrides_dir": "/var/lib/systemimager/overrides",
+    "scripts_dir": "/var/lib/systemimager/scripts",
+    "getimage_excludes": "/etc/systemimager/getimage.exclude"
+  },
+  "xmit_rsync": {
+    "config_file": "/etc/systemimager/rsyncd.conf",
+    "stubs_dir": "/etc/systemimager/rsync_stubs",
+    "log_file": "/var/log/systemimager/rsyncd"
+  },
+  "xmit_torrent": {
+    "config_file": "/etc/systemimager/bittorrent.conf",
+    "tarballs_dir": "/var/lib/systemimager/tarballs",
+    "torrents_dir": "/var/lib/systemimager/torrents"
+  },
+  "xmit_flamethrower": {
+    "config_file": "/etc/systemimager/flamethrower.conf",
+    "directory_port_base": "9000",
+    "net_iface": "eth0"
+  },
+  "xmit_ssh": {},
+  "xmit_nfs": {},
+  "xmit_docker": {},
+  "xmit_bootstrap": {
+    "packages_list": "/var/lib/systemimager/bootstraped"
+  },
+  "web_gui": {
+    "auth_type": "htaccess",
+    "theme": "dark"
+  }
+}

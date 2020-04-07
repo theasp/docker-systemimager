@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source /app/lib.bash
+set -e
+
+PIDFILE=/var/run/si_netbootmond.pid
+
+function stop {
+  kill_pidfile "${PIDFILE}"
+}
+
+function start {
+  trap stop INT TERM
+  /usr/sbin/si_netbootmond
+  sleep infinity
+}
+
+function main {
+  read_config_env
+
+  if [[ $(jq -r .pxe.boot_mode "${CONFIG_JSON}") = net ]]; then
+    echo "PXE boot mode is net, netbootmond will be sleeping"
+    sleep infinity
+  else
+    start
+  fi
+}
+
+main "$@"

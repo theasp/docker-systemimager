@@ -1,0 +1,23 @@
+---
+version: '3.3'
+
+services:
+   systemimager:
+     image: theasp/systemimager:latest
+     volumes:
+       - local/etc_systemimager:/etc/systemimager
+       - local/etc_dhcp:/etc/dhcp
+       - local/var_lib_systemimager:/var/lib/systemimager
+       - local/var_log:/var/log
+     restart: always
+     environment:
+       SI_ADDRESS: 192.168.124.1
+       SI_TMPFS_STAGING: n
+       DHCP_SUBNET_ADDRESS: 192.168.124.0
+       DHCP_SUBNET_NETMASK: 255.255.255.0
+       DHCP_SUBNET_RANGE_START: 192.168.124.10
+       DHCP_SUBNET_RANGE_END: 192.168.124.250
+       DHCP_SUBNET_DOMAIN: systemimager.example.com
+       DHCP_SUBNET_GATEWAY: 192.168.124.1
+       DHCP_BOOT_FILE: pxelinux.0
+       HTTP_PORT: 8989
